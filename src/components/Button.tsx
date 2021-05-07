@@ -1,47 +1,43 @@
 import React from "react";
-import { Text, TouchableOpacity, StyleSheet, TouchableOpacityProps} from "react-native";
+import { 
+    TouchableOpacity, 
+    Text,
+    StyleSheet,
+    TouchableOpacityProps
+} from "react-native";
+
 import colors from "../styles/colors";
+import fonts from "../styles/fonts";
 
-// Eu peguei a interface TouchableOpacityProps que permite que tenhamos
-// propriedades de botões e estendi a minha interface ButtonProps até 
-// Dessa forma eu vou poder usar propriedades de botões nesse meu componente
-interface ButtonProps extends TouchableOpacityProps { 
-    title: string;
-}
+interface ButtonProps extends TouchableOpacityProps { // Essa interface vai até o TouchableOpacityProps
+    title: string                                    // Que basicamente são as tipagens dos botões e deixa                                                       
+}                                                    // Disponível no componente 
 
-// Através do ...rest eu espalhei a interface TouchableOpacityProps no meu 
-// componente e assim eu poderei usar eles no componente
-export function Button({ title, ...rest } : ButtonProps ) {
-    return(
-
-        <TouchableOpacity 
-        style={styles.button} 
-        activeOpacity={0.7}
-        {...rest} // Espalhei todos as props do TouchableOpacityProps nessa minha tag do componente
-        >
-            <Text style={styles.buttonText}>
+export function Button({ title, ...rest }:ButtonProps) {
+    return (
+        <TouchableOpacity style={styles.container}>
+            <Text 
+            style={styles.text}
+            {...rest}
+            >
                 { title }
             </Text>
         </TouchableOpacity>
-   
     )
 }
 
-
 const styles = StyleSheet.create({
-  
-    button: {
+    container: {
         backgroundColor: colors.green,
-        justifyContent: "center",
-        alignItems: "center",
+        height: 56,
         borderRadius: 16,
-        marginBottom: 15,
-        height:56,
-        width:56,
+        justifyContent: "center",
+        alignItems: "center"
     },
 
-    buttonText: {
+    text: {
+        fontSize: 16,
         color: colors.white,
-        fontSize:24
+        fontFamily: fonts.heading
     }
 })
