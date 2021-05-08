@@ -54,7 +54,10 @@ export function UserIdentification() {
                                                                    // Quando o teclado subir os elementos do app subirão junto
             >             
 
-            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}
+                /* Isso serve para quando o usuário clicar em qualquer lugar o teclado fechar*/
+            >
 
                     <View style={styles.content}>
                         <View style={styles.form}>

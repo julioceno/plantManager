@@ -1,11 +1,12 @@
 import React from "react";
-import { useNavigation } from "@react-navigation/core";
 import {
     SafeAreaView,
     StyleSheet,
     Text,
     View
 } from "react-native"
+
+import { useNavigation } from "@react-navigation/core";
 
 import { Button } from "../components/Button"
 
@@ -16,8 +17,8 @@ export function Confirmation() {
 
     const navigation = useNavigation();
 
-    function handleStart() {
-        navigation.navigate("UserIdentification")
+    function handleMoveOn() {
+        navigation.navigate("PlantSelect")
     };
 
     return (
@@ -39,6 +40,7 @@ export function Confirmation() {
                 <View style={styles.footer}>
                     <Button 
                         title="Começar"
+                        onPress={handleMoveOn}
                     />
                 </View>
             </View>

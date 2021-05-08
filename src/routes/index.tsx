@@ -4,7 +4,8 @@ import { NavigationContainer } from "@react-navigation/native"
 import StackRoutes from "./stack.routes"
 
 const Routes = () => (
-    <NavigationContainer>
+    // Container de navegação
+    <NavigationContainer> 
         <StackRoutes />
     </NavigationContainer>
 );

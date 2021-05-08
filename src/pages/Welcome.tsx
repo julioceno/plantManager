@@ -17,7 +17,7 @@ import colors from "../styles/colors";
 import fonts from "../styles/fonts";
 
 export function Welcome() {
-    const navigation = useNavigation();
+    const navigation = useNavigation(); // Com o useNavigation que eu consigo fazer a navegação
 
     function handleStart() {
         navigation.navigate("UserIdentification")

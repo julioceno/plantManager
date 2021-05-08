@@ -10,8 +10,8 @@ import colors from "../styles/colors";
 import fonts from "../styles/fonts";
 
 interface ButtonProps extends TouchableOpacityProps { // Essa interface vai até o TouchableOpacityProps
-    title: string                                    // Que basicamente são as tipagens dos botões e deixa                                                       
-}                                                    // Disponível no componente 
+    title: string;                                    // Que basicamente são as tipagens dos botões e deixa                                                       
+};                                                    // Disponível no componente 
 
 export function Button({ title, ...rest }:ButtonProps) {
     return (
