@@ -11,27 +11,20 @@ import {
 } from "react-native";
 import { SvgFromUri } from "react-native-svg";
 import { getBottomSpace } from "react-native-iphone-x-helper";
-import { useRoute } from "@react-navigation/core"
+import { useNavigation, useRoute } from "@react-navigation/core"
 import DateTimePicker, { Event } from "@react-native-community/datetimepicker"
+import { format, isBefore } from "date-fns";
+import { PlantProps, savePlant } from "../libs/storage";
 
 import { Button } from "../components/Button";
 
 import waterdrop from "../assets/waterdrop.png";
 import colors from "../styles/colors";
-import fonts from "../styles/fonts";
+ import fonts from "../styles/fonts";
 
 
 interface Params {
-  plant: {  id: string,
-    name: string,
-    about: string,
-    water_tips: string,
-    photo: string,
-    environments: [string],
-    frequency: {
-      times: number,
-      repeat_every: string
-    }}
+  plant: PlantProps
 }
 
 export function PlantSave() {
@@ -39,12 +32,56 @@ export function PlantSave() {
     const [showDatePicker, setShowDatePicker] = useState(Platform.OS == "ios");
 
     const route = useRoute();
-    const { plant } = route.params as Params;
+    const { plant } = route.params as Params; // Quando você vem da página de escolher um tipo de planta você
+    // trás os dados da planta que você escolheu pela rota
 
-
+    const navigation = useNavigation()
+    
     function handleChangeTime(event: Event, dateTime: Date | undefined) {
-         // Parou aqui 50 minutos
-    }
+        if (Platform.OS === "android") {
+            setShowDatePicker (oldState => !oldState);
+        };
+
+        if (dateTime && isBefore(dateTime, new Date())) {
+            setSelectedDateTime(new Date());
+            return Alert.alert("Escolha uma hora no futuro");
+        };
+
+        if (dateTime) 
+            setSelectedDateTime(dateTime);
+    };
+
+    function handleOpenDateTimePickerForAndroid() {
+        setShowDatePicker(oldState => !oldState)
+    };
+
+    
+
+    async function handleSave() {
+        try {
+            await savePlant({
+                ...plant,
+                dateTimeNotification: selectedDateTime
+            })
+
+            navigation.navigate("Confirmation", {
+                title: "Tudo certo",
+                subtitle: "Fique tranquilo que sempre vamos lembrar você de cuidar de sua plantinha com muito cuidado",
+                buttonTitle: "Muito obrigado :D",
+                icon: "hug",
+                nextScreen: "MyPlants",
+            });
+
+        } catch {
+            Alert.alert("Não foi possível salvar")
+        };
+
+
+       
+
+     
+
+    };
 
     return (
         <View style={styles.container}>
@@ -78,16 +115,38 @@ export function PlantSave() {
                     Escolha o melhor horário para ser lembrado:
                 </Text>
                 
-                <DateTimePicker 
-                    value={selectedDateTime}
-                    mode="time"
-                    display="spinner"
-                    onChange={handleChangeTime}
-                />
+               {showDatePicker && ( // Quando o usuário clicar em mudar horário o estado showDatePicker será true e o DateTimePicker será apresentado para o usuário
+                    <DateTimePicker 
+                        value={selectedDateTime}
+                        mode="time"
+                        display="spinner"
+                        onChange={handleChangeTime}
+                    />
+                   )
+                }
+
+                {
+                    Platform.OS === "android" && (
+                        <TouchableOpacity
+                            style={styles.dateTimePicketBUtton} 
+                            onPress={handleOpenDateTimePickerForAndroid}
+                        >
+                        <Text style={styles.dateTimePickerText}
+                        /** 
+                         * Como o estado(variável) por padrão já começa com a data atual
+                         * Quando o usuário entrar na tela já será apresentado a hora atual
+                         * mas depois o usuário poderá mudar
+                         */ 
+                        > 
+                            {`Mudar ${format(selectedDateTime, "HH:mm")}`}
+                        </Text>
+                        </TouchableOpacity>
+                    )
+                }
 
                 <Button
                     title="Cadastrar planta"
-                    onPress={()=> {}}
+                    onPress={handleSave}
                 />
 
             </View>
@@ -162,6 +221,18 @@ const styles = StyleSheet.create({
         color: colors.heading,
         fontSize: 12, 
         marginBottom:5
+    },
+
+    dateTimePicketBUtton: {
+        width: "100%",
+        alignItems: "center",
+        paddingVertical: 40
+    },
+
+    dateTimePickerText: {
+        color: colors.heading,
+        fontSize: 24,
+        fontFamily: fonts.text
     }
 
 })
