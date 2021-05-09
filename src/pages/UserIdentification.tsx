@@ -1,16 +1,18 @@
 import React, { useState } from "react";
-import { useNavigation } from "@react-navigation/core";
 import { 
-     SafeAreaView,
-     View, 
-     Text, 
-     StyleSheet,
-     TextInput,
-     KeyboardAvoidingView,
-     TouchableWithoutFeedback,
-     Platform,
-     Keyboard
+    SafeAreaView,
+    View, 
+    Text, 
+    StyleSheet,
+    TextInput,
+    KeyboardAvoidingView,
+    TouchableWithoutFeedback,
+    Platform,
+    Keyboard,
+    Alert
 } from "react-native";
+import { useNavigation } from "@react-navigation/core";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { Button } from "../components/Button"
 
@@ -42,8 +44,13 @@ export function UserIdentification() {
     }
 
 
-    function handleSubmit() {
-        navigation.navigate("Confirmation")
+    async function handleSubmit() {
+        if(!name) 
+            return Alert.alert("Me diz como chamar você ");
+
+        await AsyncStorage.setItem('@plantmanager:user', name) // O retorno não é de imediato, então precisamos deixá-la async
+
+        navigation.navigate("Confirmation");
     };
 
     return (
@@ -86,7 +93,7 @@ export function UserIdentification() {
                                 placeholder="Digite seu nome"
                                 onBlur={handleInputBlur}
                                 onFocus={handleInputFocus}
-                                onChangeText={handleInputChange} // O onChangeText captura a mudança no input
+                                onChangeText={handleInputChange} // O onChangeText captura a mudança no input de nome
                             />
 
                         <View style={styles.footer}>
