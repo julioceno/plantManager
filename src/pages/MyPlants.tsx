@@ -5,6 +5,7 @@ import {
     View,
     Text,
     Image,
+    Alert
 } from "react-native"
 
 import { Header } from "../components/Header";
@@ -12,21 +13,45 @@ import { Header } from "../components/Header";
 import waterdrop from "../assets/waterdrop.png";
 import colors from "../styles/colors";
 import fonts from "../styles/fonts";
-import { PlantProps, loadPlant } from "../libs/storage";
+import { PlantProps, loadPlant, removePlant } from "../libs/storage";
 import { formatDistance } from "date-fns";
 import { pt } from "date-fns/locale"
 import { PlantCardSecondary } from "../components/PlantCardSecondary.";
+import { Load } from "../components/Load";
 
 export function MyPlants() {
     const [myPlants, setMyPlants] = useState<PlantProps[]>([]);
     const [loading, setLoading] = useState(true);
     const [nextWaterd, setNextWatered] = useState<string>();
 
+
+    function handleRemove(plant: PlantProps) {
+                
+        Alert.alert("Remover", `Deseja remover a ${plant.name}?`, [
+            {
+                text: "Não 🙏",
+                style: "cancel"
+            },
+
+            {
+                text: "Sim 😢",
+                onPress: async () => {
+                    try {
+                        await removePlant(plant.id)
+                        setMyPlants((oldData) => 
+                            oldData.filter((item) => item.id !== plant.id)
+                        );
+                    } catch (err) {
+                        Alert.alert("Não foi possível remover 😢")
+                    } 
+                }
+            }
+        ])
+    }
+
     useEffect(() => {
         async function loadStorageData() {
             const plantsStoraged = await loadPlant()
-
-      
 
             const nextTime = formatDistance(
                 new Date(plantsStoraged[0].dateTimeNotification).getTime(),
@@ -36,7 +61,7 @@ export function MyPlants() {
 
 
             setNextWatered(
-                `Não esqueça de regar a ${plantsStoraged[0].name} à ${nextTime} horas. `
+                `Não esqueça de regar a ${plantsStoraged[0].name} à ${nextTime}. `
             )
 
             setMyPlants(plantsStoraged);
@@ -45,6 +70,10 @@ export function MyPlants() {
 
         loadStorageData()
     })
+    
+
+    if (loading) 
+        return <Load />
 
     return (
         <View style={styles.container}>
@@ -70,7 +99,10 @@ export function MyPlants() {
                     data={myPlants}
                     keyExtractor={(item) => String(item.id)}
                     renderItem={({ item }) => (
-                        <PlantCardSecondary data={item} />
+                        <PlantCardSecondary 
+                        data={item} 
+                        handleRemove={() => {handleRemove(item)}}
+                        />
                     )}
                 />
             </View>
